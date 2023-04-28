@@ -52,8 +52,6 @@ public class CommentService {
             return commentRepository.save(commentToSave);
         }else
             return null;
-
-
     }
 
     public Comment updateOneCommentById(Long commentId, CommentUpdateRequest request) {
@@ -63,6 +61,10 @@ public class CommentService {
             commentToUpdate.setText(request.getText());
             return commentRepository.save(commentToUpdate);
         }else return null;
+    }
+
+    public void deleteOneCommentById(Long commentId) {
+        commentRepository.deleteById(commentId);
     }
 }
 

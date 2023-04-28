@@ -1,7 +1,6 @@
 package com.project.questapp.controllers;
 
 import com.project.questapp.entities.Comment;
-import com.project.questapp.entities.Post;
 import com.project.questapp.requests.CommentCreateRequest;
 import com.project.questapp.requests.CommentUpdateRequest;
 import com.project.questapp.services.CommentService;
@@ -38,6 +37,11 @@ public class CommentController {
     @PutMapping("/{commentId}")
     public Comment updateOneComment(@PathVariable Long commentId, @RequestBody CommentUpdateRequest request){
         return commentService.updateOneCommentById(commentId, request);
+    }
+
+    @DeleteMapping("/{commentId}")
+    public void deleteOneComment(@PathVariable Long commentId){
+        commentService.deleteOneCommentById(commentId);
     }
 
 }
