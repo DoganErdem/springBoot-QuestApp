@@ -5,10 +5,12 @@ import com.project.questapp.entities.Post;
 import com.project.questapp.entities.User;
 import com.project.questapp.repos.LikeRepository;
 import com.project.questapp.requests.LikeCreateRequest;
+import com.project.questapp.responses.LikeResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LikeService {
@@ -23,15 +25,17 @@ public class LikeService {
         this.postService = postService;
     }
 
-    public List<Like> getAllLikesWithParam(Optional<Long> userId, Optional<Long> postId) {
+    public List<LikeResponse> getAllLikesWithParam(Optional<Long> userId, Optional<Long> postId) {
+        List<Like> list;
         if (userId.isPresent() && postId.isPresent()){
-            return likeRepository.findByUserIdAndPostId(userId,postId);
+            list = likeRepository.findByUserIdAndPostId(userId,postId);
         } else if (userId.isPresent()) {
-            return likeRepository.findByUserId(userId);
+            list = likeRepository.findByUserId(userId);
         } else if (postId.isPresent()) {
-            return likeRepository.findByPostId(postId);
+            list = likeRepository.findByPostId(postId);
         }else
-            return likeRepository.findAll();
+            list = likeRepository.findAll();
+        return list.stream().map(like -> new LikeResponse(like)).collect(Collectors.toList());
     }
 
     public Like getOneLikeById(Long likeId) {

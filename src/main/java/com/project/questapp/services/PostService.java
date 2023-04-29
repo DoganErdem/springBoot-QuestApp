@@ -1,10 +1,12 @@
 package com.project.questapp.services;
 
+import com.project.questapp.entities.Like;
 import com.project.questapp.entities.Post;
 import com.project.questapp.entities.User;
 import com.project.questapp.repos.PostRepository;
 import com.project.questapp.requests.PostCreateRequest;
 import com.project.questapp.requests.PostUpdateRequest;
+import com.project.questapp.responses.LikeResponse;
 import com.project.questapp.responses.PostResponse;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +20,15 @@ public class PostService {
     private PostRepository postRepository;
     private UserService userService;
 
+    private LikeService likeService;
+
     public PostService(PostRepository postRepository,UserService userService) {
         this.postRepository = postRepository;
         this.userService = userService;
+    }
+
+    public void setLikeService(LikeService likeService){
+        this.likeService = likeService;
     }
 
 
@@ -31,7 +39,9 @@ public class PostService {
         }else{
             list = postRepository.findAll();
         }
-        return list.stream().map(p -> new PostResponse(p)).collect(Collectors.toList());
+        return list.stream().map(p -> {
+            List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.of(null), Optional.of(p.getId()));
+            return new PostResponse(p,likes);}).collect(Collectors.toList());
     }
 
     public Post getOnePostById(Long postId) {
