@@ -1,12 +1,14 @@
 package com.project.questapp.controllers;
 
 import com.project.questapp.entities.User;
-import com.project.questapp.repos.UserRepository;
+import com.project.questapp.exceptions.UserNotFoundException;
+import com.project.questapp.responses.UserResponse;
 import com.project.questapp.services.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/users")
@@ -17,7 +19,6 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
 
     @GetMapping
     public List<User> getAllUsers(){
@@ -30,8 +31,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getOneUserById(@PathVariable Long userId) {
-        return userService.getOneUserById(userId);
+    public UserResponse getOneUserById(@PathVariable Long userId) {
+        User user = userService.getOneUserById(userId);
+        if (user == null){
+            throw new UserNotFoundException();
+        }
+        return new UserResponse(userService.getOneUserById(userId));
     }
 
     @PutMapping("/{userId}")
@@ -44,6 +49,15 @@ public class UserController {
         userService.deleteById(userId);
     }
 
+    @GetMapping("/activity/{userId}")
+    public List<Object> getUserActivity(@PathVariable Long userId){
+        return userService.getUserActivity(userId);
+    }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private void handleUserNotFound(){
+
+    }
 
 }
